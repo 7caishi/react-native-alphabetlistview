@@ -27,19 +27,29 @@ export default class SectionList extends Component {
         this.detectAndScrollToSection = this.detectAndScrollToSection.bind(this);
         this.lastSelectedIndex = null;
         this.state = {
-            selectSectionId: ''
+            selectSectionId: null,
+            selectSectionLabel: null,
         }
     }
 
     onSectionSelect(sectionId, fromTouch) {
         this.props.onSectionSelect && this.props.onSectionSelect(sectionId);
-
+        this.setState({
+            selectSectionId: sectionId,
+            selectSectionLabel: sectionId,
+        });
         if (!fromTouch) {
             this.lastSelectedIndex = null;
         }
     }
 
     resetSection() {
+        this._timer = setInterval(() => {
+            this.setState({
+                selectSectionLabel: null
+            });
+            this._timer && clearInterval(this._timer);
+        }, 1000);
         this.lastSelectedIndex = null;
     }
 
@@ -106,6 +116,7 @@ export default class SectionList extends Component {
     render() {
         const SectionComponent = this.props.component;
         let selectSectionId = this.state.selectSectionId;
+        let selectSectionLabel = this.state.selectSectionLabel;
         const sections = this.props.sections.map((section, index) => {
             const title = this.props.getSectionListTitle ?
                 this.props.getSectionListTitle(section) :
@@ -120,6 +131,7 @@ export default class SectionList extends Component {
                     sectionId={section}
                     title={title}
                     selectSectionId={selectSectionId}
+                    selectSectionLabel={selectSectionLabel}
                 /> :
                 <View
                     style={styles.item}>
